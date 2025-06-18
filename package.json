@@ -1,0 +1,51 @@
+{
+  "name": "zarinpal-event-hub",
+  "version": "1.0.0",
+  "description": "A cross-platform event triggering package for React and Vue.js applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "analytics",
+    "events",
+    "tracking",
+    "matomo",
+    "posthog",
+    "google-analytics",
+    "react",
+    "vue"
+  ],
+  "author": "ZarinPal",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zarinpal/event-hub"
+  },
+  "bugs": {
+    "url": "https://github.com/zarinpal/event-hub/issues"
+  },
+  "homepage": "https://github.com/zarinpal/event-hub#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.11",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "vue": ">=2.6.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
