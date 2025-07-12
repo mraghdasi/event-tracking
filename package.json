@@ -1,6 +1,6 @@
 {
   "name": "zarinpal-event-hub",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A cross-platform event triggering package for React and Vue.js applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
