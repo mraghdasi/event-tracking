@@ -1,6 +1,5 @@
 import { EventHubConfig, EventHubInstance, EventTriggerType, EventData } from './types';
 import { MatomoEventTrigger } from './services/MatomoEventTrigger';
-import { PostHogEventTrigger } from './services/PostHogEventTrigger';
 import { GoogleAnalyticsEventTrigger } from './services/GoogleAnalyticsEventTrigger';
 
 export class EventHub implements EventHubInstance {
@@ -10,7 +9,6 @@ export class EventHub implements EventHubInstance {
 
   private constructor() {
     this.triggers.set('matomo', new MatomoEventTrigger());
-    this.triggers.set('posthog', new PostHogEventTrigger());
     this.triggers.set('googleAnalytics', new GoogleAnalyticsEventTrigger());
   }
 
@@ -30,10 +28,6 @@ export class EventHub implements EventHubInstance {
 
     if (config.matomo) {
       initializationPromises.push(this.triggers.get('matomo').initialize(config.matomo));
-    }
-
-    if (config.posthog) {
-      initializationPromises.push(this.triggers.get('posthog').initialize(config.posthog));
     }
 
     if (config.googleAnalytics) {

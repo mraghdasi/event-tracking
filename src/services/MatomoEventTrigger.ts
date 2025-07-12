@@ -19,7 +19,9 @@ export class MatomoEventTrigger extends BaseEventTrigger {
   }
 
   protected async sendEvent(eventName: string, eventData: EventData): Promise<void> {
-    const url = new URL(this.trackerUrl);
+    // Use apiUrl for server-side events, trackerUrl for client-side events
+    const baseUrl = this.apiUrl || this.trackerUrl;
+    const url = new URL(baseUrl);
     url.searchParams.append('idsite', this.siteId);
     url.searchParams.append('rec', '1');
     url.searchParams.append('e_c', eventName);
@@ -30,7 +32,7 @@ export class MatomoEventTrigger extends BaseEventTrigger {
     });
 
     try {
-      const response = await fetch(url.toString(), {
+      await fetch(url.toString(), {
         method: 'GET',
         mode: 'no-cors',
       });
@@ -40,6 +42,7 @@ export class MatomoEventTrigger extends BaseEventTrigger {
           eventName,
           eventData,
           url: url.toString(),
+          baseUrl: baseUrl,
         });
       }
     } catch (error: unknown) {

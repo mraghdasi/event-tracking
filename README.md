@@ -1,10 +1,10 @@
 # Event Hub
 
-A cross-platform event triggering package for React and Vue.js applications. This package provides a unified interface for sending events to various analytics services including Matomo, PostHog, and Google Analytics.
+A cross-platform event triggering package for React and Vue.js applications. This package provides a unified interface for sending events to various analytics services including Matomo, and Google Analytics.
 
 ## Features
 
-- Support for multiple analytics services (Matomo, PostHog, Google Analytics)
+- Support for multiple analytics services (Matomo, Google Analytics)
 - Framework-agnostic implementation
 - TypeScript support
 - Easy to extend with new event tracking services
@@ -35,12 +35,6 @@ await eventHub.initialize({
     trackerUrl: 'https://your-matomo-instance.com/matomo.php',
     debug: true
   },
-  posthog: {
-    enabled: true,
-    apiKey: 'your-api-key',
-    apiHost: 'https://app.posthog.com',
-    debug: true
-  },
   googleAnalytics: {
     enabled: true,
     measurementId: 'G-XXXXXXXXXX',
@@ -69,15 +63,6 @@ await eventHub.track('matomo', 'button_click', {
 }
 ```
 
-#### PostHog Configuration
-```typescript
-{
-  enabled: boolean;
-  apiKey: string;
-  apiHost: string;
-  debug?: boolean;
-}
-```
 
 #### Google Analytics Configuration
 ```typescript
@@ -119,42 +104,6 @@ const MyComponent: React.FC = () => {
 
   return <button onClick={handleClick}>Click Me</button>;
 };
-```
-
-### Vue.js Example
-
-```typescript
-import { defineComponent, onMounted } from 'vue';
-import { EventHub } from 'event-hub';
-
-export default defineComponent({
-  setup() {
-    onMounted(async () => {
-      const eventHub = EventHub.getInstance();
-      
-      // Initialize event hub
-      await eventHub.initialize({
-        posthog: {
-          enabled: true,
-          apiKey: 'your-api-key',
-          apiHost: 'https://app.posthog.com'
-        }
-      });
-    });
-
-    const handleClick = async () => {
-      const eventHub = EventHub.getInstance();
-      await eventHub.track('posthog', 'button_click', {
-        buttonId: 'my-button',
-        page: 'home'
-      });
-    };
-
-    return {
-      handleClick
-    };
-  }
-});
 ```
 
 ## Error Handling

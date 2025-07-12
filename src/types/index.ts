@@ -1,4 +1,4 @@
-export type EventTriggerType = 'matomo' | 'posthog' | 'googleAnalytics';
+export type EventTriggerType = 'matomo' | 'googleAnalytics';
 
 export interface EventData {
   [key: string]: any;
@@ -15,11 +15,6 @@ export interface MatomoConfig extends BaseConfig {
   apiUrl?: string;
 }
 
-export interface PostHogConfig extends BaseConfig {
-  apiKey: string;
-  apiHost: string;
-}
-
 export interface GoogleAnalyticsConfig extends BaseConfig {
   measurementId: string;
   apiSecret?: string;
@@ -27,7 +22,6 @@ export interface GoogleAnalyticsConfig extends BaseConfig {
 
 export interface EventHubConfig {
   matomo?: MatomoConfig;
-  posthog?: PostHogConfig;
   googleAnalytics?: GoogleAnalyticsConfig;
 }
 
