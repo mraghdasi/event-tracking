@@ -14,7 +14,9 @@ A cross-platform event triggering package for React and Vue.js applications. Thi
 ## Installation
 
 ```bash
-npm install event-hub
+npm install zarinpal-event-hub
+yarn add zarinpal-event-hub
+pnpm add zarinpal-event-hub
 ```
 
 ## Usage
