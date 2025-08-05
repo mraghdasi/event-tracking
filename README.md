@@ -24,29 +24,43 @@ pnpm add zarinpal-event-hub
 ### Basic Setup
 
 ```typescript
-import { EventHub } from 'event-hub';
+import { EventHub } from 'zarinpal-event-hub';
 
-// Get the EventHub instance
-const eventHub = EventHub.getInstance();
+// Define your event mapping type for better TypeScript support
+type MyEventMapping = {
+  button_click_event: ['matomo', 'googleAnalytics'];
+  page_view_event: ['googleAnalytics'];
+  form_submit_event: ['matomo'];
+};
 
-// Initialize with configuration
-await eventHub.initialize({
-  matomo: {
-    enabled: true,
-    siteId: 'your-site-id',
-    trackerUrl: 'https://your-matomo-instance.com/matomo.php',
-    debug: true
+// Get the EventHub instance with type support
+const eventHub = EventHub.getInstance<MyEventMapping>();
+
+// Initialize with configuration and event mapping
+await eventHub.initialize(
+  {
+    matomo: {
+      enabled: true,
+      siteId: 'your-site-id',
+      trackerUrl: 'https://your-matomo-instance.com/matomo.php',
+      debug: true
+    },
+    googleAnalytics: {
+      enabled: true,
+      measurementId: 'G-XXXXXXXXXX',
+      apiSecret: 'your-api-secret',
+      debug: true
+    }
   },
-  googleAnalytics: {
-    enabled: true,
-    measurementId: 'G-XXXXXXXXXX',
-    apiSecret: 'your-api-secret',
-    debug: true
+  {
+    button_click_event: ['matomo', 'googleAnalytics'],
+    page_view_event: ['googleAnalytics'],
+    form_submit_event: ['matomo']
   }
-});
+);
 
-// Track an event
-await eventHub.track('matomo', 'button_click', {
+// Track an event - will automatically send to configured SDKs
+await eventHub.track('button_click_event', {
   category: 'User Interaction',
   action: 'Button Click',
   name: 'Submit Button',
@@ -84,25 +98,40 @@ await eventHub.track('matomo', 'button_click', {
 
 ```typescript
 import React, { useEffect } from 'react';
-import { EventHub } from 'event-hub';
+import { EventHub } from 'zarinpal-event-hub';
+
+type AppEventMapping = {
+  button_click_event: ['matomo'];
+  page_view_event: ['googleAnalytics'];
+};
 
 const MyComponent: React.FC = () => {
   useEffect(() => {
-    const eventHub = EventHub.getInstance();
+    const eventHub = EventHub.getInstance<AppEventMapping>();
     
-    // Initialize event hub
-    eventHub.initialize({
-      matomo: {
-        enabled: true,
-        siteId: 'your-site-id',
-        trackerUrl: 'https://your-matomo-instance.com/matomo.php'
+    // Initialize event hub with event mapping
+    eventHub.initialize(
+      {
+        matomo: {
+          enabled: true,
+          siteId: 'your-site-id',
+          trackerUrl: 'https://your-matomo-instance.com/matomo.php'
+        },
+        googleAnalytics: {
+          enabled: true,
+          measurementId: 'G-XXXXXXXXXX'
+        }
+      },
+      {
+        button_click_event: ['matomo'],
+        page_view_event: ['googleAnalytics']
       }
-    });
+    );
   }, []);
 
   const handleClick = async () => {
-    const eventHub = EventHub.getInstance();
-    await eventHub.track('matomo', 'button_click', {
+    const eventHub = EventHub.getInstance<AppEventMapping>();
+    await eventHub.track('button_click_event', {
       category: 'User Interaction',
       action: 'Button Click',
       name: 'My Button',
@@ -120,24 +149,31 @@ const MyComponent: React.FC = () => {
 #### Plugin Setup (`plugins/event-hub.client.js`)
 
 ```javascript
-import { EventHub } from 'event-hub'
+import { EventHub } from 'zarinpal-event-hub'
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   const eventHub = EventHub.getInstance()
   
-  await eventHub.initialize({
-    matomo: {
-      enabled: true,
-      siteId: 'your-site-id',
-      trackerUrl: 'https://your-matomo-instance.com/matomo.php',
-      debug: true
+  await eventHub.initialize(
+    {
+      matomo: {
+        enabled: true,
+        siteId: 'your-site-id',
+        trackerUrl: 'https://your-matomo-instance.com/matomo.php',
+        debug: true
+      },
+      googleAnalytics: {
+        enabled: true,
+        measurementId: 'G-XXXXXXXXXX',
+        debug: true
+      }
     },
-    googleAnalytics: {
-      enabled: true,
-      measurementId: 'G-XXXXXXXXXX',
-      debug: true
+    {
+      button_click_event: ['matomo', 'googleAnalytics'],
+      page_view_event: ['googleAnalytics'],
+      form_submit_event: ['matomo']
     }
-  })
+  )
 
   return {
     provide: {
@@ -162,7 +198,7 @@ const { $eventHub } = useNuxtApp()
 
 const trackButtonClick = async () => {
   try {
-    await $eventHub.track('matomo', 'button_click', {
+    await $eventHub.track('button_click_event', {
       category: 'User Interaction',
       action: 'Button Click',
       name: 'Example Button',
@@ -177,7 +213,7 @@ const trackButtonClick = async () => {
 
 const trackPageView = async () => {
   try {
-    await $eventHub.track('googleAnalytics', 'page_view', {
+    await $eventHub.track('page_view_event', {
       page_title: 'Home Page',
       page_location: '/'
     })
@@ -237,15 +273,23 @@ If events are not appearing in Matomo:
 ### Example Event Structure
 
 ```typescript
-await eventHub.track('matomo', 'button_click', {
-  category: 'User Interaction',    // Required
-  action: 'Button Click',          // Required  
-  name: 'Submit Button',           // Required
+await eventHub.track('button_click_event', {
+  category: 'User Interaction',    // Required for Matomo
+  action: 'Button Click',          // Required for Matomo  
+  name: 'Submit Button',           // Required for Matomo
   value: 1,                        // Optional
   buttonId: 'submit-button',       // Custom dimension
   page: 'checkout'                 // Custom dimension
 });
 ```
+
+### Event Naming Convention
+
+All event names must follow these rules:
+- Use snake_case format (lowercase with underscores)
+- End with `_event` suffix
+- Examples: `button_click_event`, `form_submit_event`, `page_view_event`
+- Invalid: `buttonClick`, `button-click`, `button_click` (missing _event suffix)
 
 ## Error Handling
 
@@ -253,7 +297,7 @@ The package includes built-in error handling and debugging capabilities. When `d
 
 ```typescript
 try {
-  await eventHub.track('matomo', 'button_click', {
+  await eventHub.track('button_click_event', {
     buttonId: 'submit-button'
   });
 } catch (error) {
@@ -266,8 +310,8 @@ try {
 To add a new event tracking service, create a new class that extends the `BaseEventTrigger` class:
 
 ```typescript
-import { BaseEventTrigger } from 'event-hub';
-import { EventData, BaseConfig } from 'event-hub';
+import { BaseEventTrigger } from 'zarinpal-event-hub';
+import { EventData, BaseConfig } from 'zarinpal-event-hub';
 
 export class CustomEventTrigger extends BaseEventTrigger {
   public async initialize(config: BaseConfig): Promise<void> {

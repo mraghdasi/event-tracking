@@ -2,3 +2,4 @@ node_modules
 dist
 test-simple.js
 test-matomo.html
+CLAUDE.md

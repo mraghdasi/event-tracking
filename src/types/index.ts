@@ -25,12 +25,16 @@ export interface EventHubConfig {
   googleAnalytics?: GoogleAnalyticsConfig;
 }
 
+export type EventMappingConfig<T extends string = string> = {
+  [K in T]: EventTriggerType[];
+};
+
 export interface EventTrigger {
   initialize(config: BaseConfig): Promise<void>;
   track(eventName: string, eventData: EventData): Promise<void>;
 }
 
-export interface EventHubInstance {
-  initialize(config: EventHubConfig): Promise<void>;
-  track(triggerType: EventTriggerType, eventName: string, eventData: EventData): Promise<void>;
+export interface EventHubInstance<T extends EventMappingConfig = EventMappingConfig> {
+  initialize(config: EventHubConfig, eventMapping: T): Promise<void>;
+  track<K extends keyof T>(eventName: K, eventData: EventData): Promise<void>;
 } 
